@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title> NTAI COVID SAFETY </title>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <link rel="stylesheet" href="assets/css/main.css"></style>
+    <link rel="stylesheet" href="assets/css/chart.css"></style>
+    <link rel="stylesheet" href="assets/css/admin.css"></style>
+    
+    <script src="assets/js/highcharts.js"></script>
+    <script src="assets/js/jquery-3.6.1.min.js"></script>
+
+    <script src="assets/js/variable-pie.js"></script>
+    <script src="assets/js/exporting.js"></script>
+    <script src="assets/js/export-data.js"></script>
+    <script src="assets/js/accessibility.js"></script>
+   
+</head>
+<body>
+
+<div class="header">
+  <h1>
+      <div style=display:flex;>
+        <div>
+            <img src="assets/img/logo.png" style="width:80px;" /> 
+        </div>
+        <div style="padding:15px;"> NTAI COVID SAFETY </div>
+      </div>
+    </h1>
+</div>
+
+<div class="row">
+  <div class="col-2 col-s-3 menu">
+    <ul>
+      <li onclick="tabs('tb0')" > Home </li>
+      <li onclick="tabs('tb1')" > Register </li>
+      <li> Enter Store </li>
+      <li> Exit Store </li>
+      <li onclick="tabs('tb4')" > Admin </li>
+    </ul>
+  </div>
+
+  <div class="col-7 col-s-9">
+    <style>
+        .tbs{
+            display:none;
+        }
+        #tb4{
+            display:block;
+        }
+    </style> 
+     <!-- Tab Body -->
+    <div class="tbs" id="tb0">
+        <figure class="highcharts-figure">
+            <div id="container"></div>
+            <p class="highcharts-description">
+              Variable radius pie charts can be used to visualize a
+              second dimension in a pie chart. In this chart, the more
+              highly dense store capacity are drawn further out, while the
+              slice width is determined by the size of the people.
+            </p>
+          </figure> 
+    </div> 
+    <!--  Tab Admin -->
+    <div class="tbs" id="tb4">
+          
+            
+<form style="margin:auto;">
+    <div class="container">
+      <h1>Admin</h1>
+      <p>Please fill in this form to set capacity</p>
+      <hr>
+  
+      <label for="email"><b>Capacity</b></label>
+      <input type="number" min="1" value="1" placeholder="Enter Capacity" style="text-align:center" name="capacity" id="capacity" required>
+   
+      <button type="submit" class="registerbtn">Set</button>
+    </div>
+     
+  </form>
+    </div>
+      
+   
+   </div>
+
+  <div class="col-3 col-s-12">
+    <div class="aside">
+      <h2>What is COVID?</h2>
+      <p> It is an infectious disease caused by the SARS-CoV-2 virus</p>
+      <h2>How is it Transmitted?</h2>
+      <p> It can spread from an infected person’s mouth or nose in small liquid particles when they cough, sneeze, speak, sing or breathe</p>
+      <h2>Most common symptoms:</h2>
+      <p>
+        <ul style="text-align:left;" > 
+            <li> fever </li>
+            <li> cough </li>
+            <li> tiredness</li>
+            <li> loss of taste or smell</li>
+        </ul> 
+        </p>  
+        <h2>Less common symptoms:</h2>
+      <p>
+        <ul style="text-align:left;" > 
+            <li> sore throat </li>
+            <li> headache </li>
+            <li> aches and pains </li>
+            <li> red or irritated eyes </li>
+        </ul> 
+        </p>  
+    </div>
+  </div>
+</div>
+
+<div class="footer">
+  <p> Thank you for using our facilities and stay safe.</p>
+</div>
+
+
+<script src="assets/js/main.js"></script>
+</body>
+</html>
+
+
