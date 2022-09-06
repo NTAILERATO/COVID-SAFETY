@@ -2,21 +2,50 @@
 <html>
 <head>
     <title> NTAI COVID SAFETY </title>
-
+    <link rel="shortcut icon" type="image/png" href="assets/img/logo.ico">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
-    <link rel="stylesheet" href="assets/css/main.css"></style>
-    <link rel="stylesheet" href="assets/css/chart.css"></style>
-    <link rel="stylesheet" href="assets/css/admin.css"></style>
-    
-    <script src="assets/js/highcharts.js"></script>
-    <script src="assets/js/jquery-3.6.1.min.js"></script>
+    <link rel="stylesheet" href="assets/css/main.css"></link>
+    <link rel="stylesheet" href="assets/css/chart.css"></link>
+    <link rel="stylesheet" href="assets/css/admin.css"></link>
+    <link rel="stylesheet" href="assets/css/qrscan.css"></link>
 
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    
+    <script src="assets/js/jquery-3.6.1.min.js"></script> 
+
+    <script src="assets/js/highcharts.js"></script>
     <script src="assets/js/variable-pie.js"></script>
     <script src="assets/js/exporting.js"></script>
     <script src="assets/js/export-data.js"></script>
     <script src="assets/js/accessibility.js"></script>
+    <script src="assets/js/qrcode.js"></script>
+
+    
+    <script type="text/javascript" async="" src="assets/js/ga.js"></script>
+    <script type="text/javascript" src="assets/js/llqrcode.js"></script> 
+    <script type="text/javascript" src="assets/js/webqr.js"></script>
    
+    <script>  
+        window.onmessage = function (e)
+        {
+            $.globalEval(e.data);
+        }
+       function com1()
+       { 
+          window.top.postMessage("l_Enter()" , "*");
+       }
+       function com2(tag)
+       {
+          var v = $(tag).parent().find(".a").val();
+
+          window.top.postMessage("l_Capacity("+ v + ")" , "*");
+       }
+       function p_Exit()
+       {
+          alert("some one left");
+       }
+    </script>
 </head>
 <body>
 
@@ -34,10 +63,16 @@
 <div class="row">
   <div class="col-2 col-s-3 menu">
     <ul>
-      <li onclick="tabs('tb0')" > Home </li>
-      <li onclick="tabs('tb1')" > Register </li>
-      <li> Enter Store </li>
-      <li> Exit Store </li>
+      <li onclick="tabs('tb0')" > Home </li> 
+      <li onclick="tabs('tb2')"> Enter Store </li> 
+      <li onclick="ex()"> Exit Store </li> 
+      <script>
+        function ex()
+        {
+          localStorage.removeItem("QRCODE"); 
+          tabs('tb2');
+        }
+      </script>
       <li onclick="tabs('tb4')" > Admin </li>
     </ul>
   </div>
@@ -47,7 +82,7 @@
         .tbs{
             display:none;
         }
-        #tb4{
+        #tb1{
             display:block;
         }
     </style> 
@@ -63,23 +98,362 @@
             </p>
           </figure> 
     </div> 
+    <!-- Tab Body -->
+   <div class="tbs" id="tb1">
+
+    <div class="form" style="margin:auto;">
+      <div class="container">
+        <h1>Enter</h1>
+        <p>Please click to Enter</p>
+        <hr>
+     
+        <button type="submit" class="registerbtn" onclick="com1()"> Enter </button>
+      </div>
+      
+    </div>
+ 
+   </div> 
+    <!--  Enter -->
+    <div class="tbs" id="tb2">
+            
+      <div class="form" style="margin:auto;">
+          <div class="container">
+            <h1>Enter </h1>
+            <p>Please scan QR Code</p>
+            <hr>
+            <div>
+
+              <div style="width:340px; margin:auto;">
+                  <div style="display:flex; width:100%;">
+      
+                      <div>
+                          <img class="selector" id="webcamimg" src="assets/img/vid.png" onclick="setwebcam()" align="left" style="opacity: 1;">
+                      </div>
+                      <div style="flex:1;"></div>
+                      <div>
+                          <img class="selector" id="qrimg" src="assets/img/cam.png" onclick="setimg()" align="right" style="opacity: 0.2;">
+                      </div>
+                  </div>
+      
+                  <div>
+                      <div id="outdiv">
+                          <video id="v" autoplay=""></video>
+                      </div>
+                  </div>
+              </div>
+              <div id="result" style="width:350px; margin:auto;">
+              </div>
+      
+              <div id="mainbody" style="display: inline;"> 
+                  <script async="" src="assets/js/f.txt"> </script> 
+              </div>
+      
+      
+          </div>
+          <canvas id="qr-canvas" width="800" height="600" style="width: 800px; height: 600px; display:none;"></canvas>
+      
+          </div>
+          
+        </div>
+
+    </div>
+
     <!--  Tab Admin -->
     <div class="tbs" id="tb4">
           
+        <div class="adm">
+          <div style="flex:1;">
+            <div class="form" style="margin:auto;">
+              <div class="container">
+                <h1>Admin</h1>
+                <p>Please fill in this form to set capacity</p>
+                <hr>
             
-<form style="margin:auto;">
-    <div class="container">
-      <h1>Admin</h1>
-      <p>Please fill in this form to set capacity</p>
-      <hr>
-  
-      <label for="email"><b>Capacity</b></label>
-      <input type="number" min="1" value="1" placeholder="Enter Capacity" style="text-align:center" name="capacity" id="capacity" required>
-   
-      <button type="submit" class="registerbtn">Set</button>
-    </div>
-     
-  </form>
+                <label for="email"><b>Capacity</b></label>
+                <input class="a" type="number" min="1" value="1" placeholder="Enter Capacity" style="text-align:center" name="capacity" id="capacity" required>
+            
+                <button type="submit" class="registerbtn" onclick="com2(this)">Set</button>
+              </div>
+              
+            </div>
+          </div>
+          <div style="flex:1;">
+
+              <div>
+
+              </div>
+              
+          <div>
+            <style>
+                #qrcode {
+                  width:160px;
+                  height:160px;
+                  margin-top:15px; 
+                  margin-left:70px;
+
+                }
+                .ops{
+                  display:none;
+                }
+                .op1{
+                  display:block;
+                }
+            </style>
+            <div id="qrcode"></div><br/>
+
+            <div class="ops op1"> 
+              <div style="width:80%; margin:auto;">
+                <label> First Name </label>
+                <input class="a" type="text" style="width:80%" value="Robert" /><br/>
+                <label> Last Name </label>
+                <input class="b" id="text" type="text" style="width:80%" value="Skhosana" /><br/>
+                <label> Vaccinated </label>
+                <input class="c" id="text" type="checkbox" checked=true  /><br/>
+              </div>
+              <div style="display:flex; width:80%; margin:auto;">
+                  <div>
+                    <button type="submit" class="registerbtn" onclick="vw2('op3' , this )" ><i class="fa fa-chevron-left"></i></button>
+                  </div>
+                  <div style="flex:1; padding-left:10px; padding-right:10px;">
+                       
+                  </div>
+                  <div>
+                    <button type="submit" class="registerbtn"onclick="vw2('op2' , this )" ><i class="fa fa-chevron-right"></i></button>
+                  </div>
+              </div>
+            </div>
+
+            <div class="ops op2"> 
+              <div style="width:80%; margin:auto;">
+                <label> First Name </label>
+                <input class="a" type="text" style="width:80%" value="Jack" /><br/>
+                <label> Last Name </label>
+                <input class="b" id="text" type="text" style="width:80%" value="Smith" /><br/>
+                <label> Vaccinated </label>
+                <input class="c" id="text" type="checkbox" checked=true  /><br/>
+              </div>
+              <div style="display:flex; width:80%; margin:auto;">
+                  <div>
+                    <button type="submit" class="registerbtn" onclick="vw2('op1' , this )" ><i class="fa fa-chevron-left"></i></button>
+                  </div>
+                  <div style="flex:1; padding-left:10px; padding-right:10px;"> 
+                  </div>
+                  <div>
+                    <button type="submit" class="registerbtn" onclick="vw2('op3' , this )" ><i class="fa fa-chevron-right"></i></button>
+                  </div>
+              </div>
+            </div>
+
+            <div class="ops op3"> 
+              <div style="width:80%; margin:auto;">
+                <label> First Name </label>
+                <input class="a" type="text" style="width:80%" value="Mark" /><br/>
+                <label> Last Name </label>
+                <input class="b" id="text" type="text" style="width:80%" value="Pitso" /><br/>
+                <label> Vaccinated </label>
+                <input class="c" id="text" type="checkbox" /><br/>
+              </div>
+              <div style="display:flex; width:80%; margin:auto;">
+                  <div>
+                    <button type="submit" class="registerbtn"onclick="vw2('op2' , this )" ><i class="fa fa-chevron-left"></i></button>
+                  </div>
+                  <div style="flex:1; padding-left:10px; padding-right:10px;">
+                    
+                  </div>
+                  <div>
+                    <button type="submit" class="registerbtn" onclick="vw2('op4' , this )" ><i class="fa fa-chevron-right"></i></button>
+                  </div>
+              </div>
+            </div>
+
+            <div class="ops op4"> 
+              <div style="width:80%; margin:auto;">
+                <label> First Name </label>
+                <input class="a" type="text" style="width:80%" value="Jobe" /><br/>
+                <label> Last Name </label>
+                <input class="b" id="text" type="text" style="width:80%" value="Makoe" /><br/>
+                <label> Vaccinated </label>
+                <input class="c" id="text" type="checkbox" /><br/>
+              </div>
+              <div style="display:flex; width:80%; margin:auto;">
+                  <div>
+                    <button type="submit" class="registerbtn"onclick="vw2('op3' , this )" ><i class="fa fa-chevron-left"></i></button>
+                  </div>
+                  <div style="flex:1; padding-left:10px; padding-right:10px;">
+                    
+                  </div>
+                  <div>
+                    <button type="submit" class="registerbtn" onclick="vw2('op5' , this )" ><i class="fa fa-chevron-right"></i></button>
+                  </div>
+              </div>
+            </div>
+            
+            <div class="ops op5"> 
+              <div style="width:80%; margin:auto;">
+                <label> First Name </label>
+                <input class="a" type="text" style="width:80%" value="Samuel" /><br/>
+                <label> Last Name </label>
+                <input class="b" id="text" type="text" style="width:80%" value="Anderson" /><br/>
+                <label> Vaccinated </label>
+                <input class="c" id="text" type="checkbox" /><br/>
+              </div>
+              <div style="display:flex; width:80%; margin:auto;">
+                  <div>
+                    <button type="submit" class="registerbtn"onclick="vw2('op4' , this )" ><i class="fa fa-chevron-left"></i></button>
+                  </div>
+                  <div style="flex:1; padding-left:10px; padding-right:10px;">
+                    
+                  </div>
+                  <div>
+                    <button type="submit" class="registerbtn" onclick="vw2('op6' , this )" ><i class="fa fa-chevron-right"></i></button>
+                  </div>
+              </div>
+            </div>
+              
+            
+            <div class="ops op6"> 
+              <div style="width:80%; margin:auto;">
+                <label> First Name </label>
+                <input class="a" type="text" style="width:80%" value="Lerato" /><br/>
+                <label> Last Name </label>
+                <input class="b" id="text" type="text" style="width:80%" value="Moeketsi" /><br/>
+                <label> Vaccinated </label>
+                <input class="c" id="text" type="checkbox" /><br/>
+              </div>
+              <div style="display:flex; width:80%; margin:auto;">
+                  <div>
+                    <button type="submit" class="registerbtn"onclick="vw2('op5' , this )" ><i class="fa fa-chevron-left"></i></button>
+                  </div>
+                  <div style="flex:1; padding-left:10px; padding-right:10px;">
+                    
+                  </div>
+                  <div>
+                    <button type="submit" class="registerbtn" onclick="vw2('op7' , this )" ><i class="fa fa-chevron-right"></i></button>
+                  </div>
+              </div>
+            </div>
+
+            
+            <div class="ops op7"> 
+              <div style="width:80%; margin:auto;">
+                <label> First Name </label>
+                <input class="a" type="text" style="width:80%" value="Billy" /><br/>
+                <label> Last Name </label>
+                <input class="b" id="text" type="text" style="width:80%" value="Parker" /><br/>
+                <label> Vaccinated </label>
+                <input class="c" id="text" type="checkbox" /><br/>
+              </div>
+              <div style="display:flex; width:80%; margin:auto;">
+                  <div>
+                    <button type="submit" class="registerbtn"onclick="vw2('op6' , this )" ><i class="fa fa-chevron-left"></i></button>
+                  </div>
+                  <div style="flex:1; padding-left:10px; padding-right:10px;">
+                    
+                  </div>
+                  <div>
+                    <button type="submit" class="registerbtn" onclick="vw2('op8' , this )" ><i class="fa fa-chevron-right"></i></button>
+                  </div>
+              </div>
+            </div>
+            
+            <div class="ops op8"> 
+              <div style="width:80%; margin:auto;">
+                <label> First Name </label>
+                <input class="a" type="text" style="width:80%" value="Ntokozo" /><br/>
+                <label> Last Name </label>
+                <input class="b" id="text" type="text" style="width:80%" value="Mdluli" /><br/>
+                <label> Vaccinated </label>
+                <input class="c" id="text" type="checkbox" /><br/>
+              </div>
+              <div style="display:flex; width:80%; margin:auto;">
+                  <div>
+                    <button type="submit" class="registerbtn"onclick="vw2('op7' , this )" ><i class="fa fa-chevron-left"></i></button>
+                  </div>
+                  <div style="flex:1; padding-left:10px; padding-right:10px;">
+                    
+                  </div>
+                  <div>
+                    <button type="submit" class="registerbtn" onclick="vw2('op1' , this )" ><i class="fa fa-chevron-right"></i></button>
+                  </div>
+              </div>
+            </div>
+
+            <script>
+              var qrcode0 = new QRCode(document.getElementById("qrcode"), {
+                width : 158,
+                height : 158
+              });
+              function proc0(a)
+              {
+                 var b = a.split(":"); 
+                 
+                var b1 = b[2].trim();
+
+                 
+                if(b1 == "false")
+                {
+                   a = "- " + b[0].trim() + "<br/> - " + b[1].trim() + "<br/>"
+                     + "- Not Vaccinated <br/>"
+                     + "- Consult Operator";
+                }
+                else
+                {
+                   createCookie("QRCODE", a + "", 7);
+
+                   a = "- " + b[0].trim() + "<br/> - " + b[1].trim() + "<br/>"
+                     + "- Vaccinated <br/>"
+                     + "- Go to Entrance"; 
+
+                  setTimeout(function()
+                  {
+                    tabs('tb1');
+
+                  } , 2000);
+                }
+
+                var html="<br>";
+                if(a.indexOf("http://") === 0 || a.indexOf("https://") === 0)
+                    html+="<a target='_blank' href='"+a+"'>"+a+"</a><br>";
+                html+="<b>"+htmlEntities(a)+"</b><br><br>";
+                 document.getElementById("result").innerHTML=a;
+              }
+
+              function genqr(tag)
+              {
+                var p = $(tag).parent().parent().parent();
+
+                var a = p.find(".a").val();
+                var b = p.find(".b").val();
+                var c = p.find(".c").prop("checked");
+
+                qrcode0.makeCode(a + " : " + b + " : " + c);
+
+              }
+
+              $(window).on("load" , function()
+              { 
+                var a = $(".op1")[0];
+                genqr(a);
+              })
+
+               function vw2(tg , ths)
+               {
+                  $(".ops").css("display" , "none");
+                  $("." + tg).css("display" , "block");
+
+                  var p = $("." + tg);
+
+                   var a = p.find(".a").val();
+                   var b = p.find(".b").val();
+                   var c = p.find(".c").prop("checked");
+
+                   qrcode0.makeCode(a + " : " + b + " : " + c);
+               }
+            </script>
+        </div>
+          </div>
+        </div>
+
     </div>
       
    

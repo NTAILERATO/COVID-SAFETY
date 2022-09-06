@@ -51,9 +51,11 @@ body {
   
   @media only screen and (min-width: 600px) {
     /* For tablets: */
-    form {width: 90%;} 
+    .form {width: 90%;} 
+    .adm{ display:block}
   }
   @media only screen and (min-width: 768px) {
     /* For desktop: */
-    form {width: 65%;}
+    .form {width: 65%;}
+    .adm{ display:flex;}
   }
