@@ -25,7 +25,12 @@
     <script type="text/javascript" async="" src="assets/js/ga.js"></script>
     <script type="text/javascript" src="assets/js/llqrcode.js"></script> 
     <script type="text/javascript" src="assets/js/webqr.js"></script>
+    <script type="text/javascript" src="assets/js/linq.js"></script>
    
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/4.5.0/firebase.js"></script> 
+    <script src="assets/js/firebase_cred.js"></script> 
+
     <script>  
         window.onmessage = function (e)
         {
@@ -37,14 +42,266 @@
        }
        function com2(tag)
        {
-          var v = $(tag).parent().find(".a").val();
+          var v = $(tag).parent().find(".a").val(); 
 
-          window.top.postMessage("l_Capacity("+ v + ")" , "*");
+          var data = 
+          {
+             "value" : v  
+          }
+
+          if(capacity_table.length == 0)
+          {
+            db.ref('capacity_table').push(data);
+          }
+          else
+          {
+             var id = $("#cap_btn").attr("name");   
+             var obj = {};
+             obj[id] = data;                                                  
+             db.ref('capacity_table').update(obj);
+          }
+
        }
+
        function p_Exit()
        {
           alert("some one left");
        }
+       // Methods 
+        function capacity_Stats_table_load()
+        {
+          setTimeout(function()
+          {  
+            
+              var data = (capacity_Stats_table.length == 0)? [] : capacity_Stats_table[0];
+              var keys = (capacity_Stats_table.length == 0)? [] : capacity_Stats_table[1];
+        
+              var srs = [];
+              if(capacity_Stats_table.length == 0)
+              {
+                srs = [{
+                      minPointSize: 10,
+                      innerSize: '20%',
+                      zMin: 0,
+                      name: 'categories',
+                      data: [{
+                        name: 'Entered', 
+                        color:'#90ED7D' ,
+                        y:0 ,
+                        z:0 
+                      }, {
+                        name: 'Capacity', 
+                        color: '#E4D354', 
+                        y:0,
+                        z:0
+                      }, {
+                        name: 'Exited', 
+                        color : '#F15C80' ,
+                        y: 0,
+                        z: 0
+                      }]
+                    }];
+              } 
+              else
+              {  
+
+                 srs = [{
+                      minPointSize: 10,
+                      innerSize: '20%',
+                      zMin: 0,
+                      name: 'categories',
+                      data: [{
+                        name: 'Entered', 
+                        color:'#90ED7D' ,
+                        y:capacity_Stats_table[0][0].enter ,
+                        z:capacity_Stats_table[0][0].enter
+                      }, {
+                        name: 'Capacity', 
+                        color: '#E4D354', 
+                        y:capacity_Stats_table[0][0].capacity,
+                        z:capacity_Stats_table[0][0].capacity
+                      }, {
+                        name: 'Exited', 
+                        color : '#F15C80' ,
+                        y: capacity_Stats_table[0][0].exit,
+                        z: capacity_Stats_table[0][0].exit
+                      }]
+                    }];
+              } 
+              
+              var chartT = new Highcharts.chart('container', {
+                    chart: {
+                      type: 'variablepie'
+                    },
+                    title: {
+                      text: 'STORE CAPACITY'
+                    },
+                    tooltip: {
+                      headerFormat: '',
+                      pointFormat: '<span style="color:{point.color}">\u25CF</span> <b> {point.name}</b><br/>' +
+                        'Total People : <b>{point.y}</b><br/>' 
+                    },
+                    series: srs
+                  });
+
+          },1000); 
+
+        }
+        function capacity_table_load()
+        {
+          setTimeout(function()
+          {  
+            
+              var data = (capacity_table.length == 0)? [] : capacity_table[0];
+              var keys = (capacity_table.length == 0)? [] : capacity_table[1];
+        
+              if(capacity_table.length == 0)
+              {
+                 $("#cap_btn").attr("name" , "empty");
+              } 
+              else
+              { 
+                 $("#cap_btn").attr("name" , capacity_table[1][0]);
+                 $("#cap_inp").val(capacity_table[0][0].value);
+              } 
+
+          },1000); 
+
+        }
+       // Read Database 
+       var list = ["capacity_table" , "capacity_Stats_table" ];
+
+       $.each(list , (k , itm)=>
+       {
+            // Initially
+            db.ref( itm ).once("value" , (snap) =>
+            {
+                // Create  
+                var us = "var " + itm + " = "; 
+                var tc = dbs(snap); 
+                var tk = dbk(snap); 
+
+                if(tc.length == 0)
+                {
+                    us += "[];";
+                }
+                else
+                {
+                    us += JSON.stringify([tc , tk]) + ";";
+                }
+                // Load 
+                   try
+                   { 
+                      $.globalEval(us);  
+
+                      $.globalEval(itm + "_load()");
+                   }
+                   catch{} 
+                //    
+            });
+            // Receive Addition 
+            db.ref( itm ).on("child_added", function(snap) 
+            {
+                
+                var a = window[itm] ;
+                var b = a + "";
+                var us = "var " + itm + " = "; 
+
+                if(b == "")
+                { 
+                    us += JSON.stringify([ [snap.val()] , [snap.key]]) + ";";
+                }
+                else if( b != "undefined")
+                {
+                    var tc = a[0];
+                    var tk = a[1];
+
+                    tc.push(snap.val());
+                    tk.push(snap.key);
+
+                    us += JSON.stringify([tc , tk]) + ";"; 
+                }
+                // Load 
+                   try
+                   {  
+                       $.globalEval(us); 
+                      $.globalEval(itm + "_load()");
+                   }
+                   catch{} 
+                //   
+            });
+            // Receive Update  
+            db.ref( itm ).on("child_changed", function(snap) 
+            { 
+                var a = window[itm] ;
+                var b = a + "";
+                var us = "var " + itm + " = "; 
+
+                if( b != "undefined")
+                {
+                    var tc = a[0];
+                    var tk = a[1];
+
+                    var pos = 0;
+
+                    $.each(tk , (k , itm)=>
+                    {
+                        if(snap.key == itm)
+                        {
+                            pos = k;
+                        }
+                    })
+
+                    tc[pos] = snap.val(); 
+
+                    us += JSON.stringify([tc , tk]) + ";"; 
+                }
+                // Load  
+                   try
+                   { 
+                      $.globalEval(us);
+                      $.globalEval(itm + "_load()");
+                   }
+                   catch{} 
+                //   
+            });
+            // Receive Deleted   
+            db.ref( itm ).on("child_removed", function(snap) 
+            {  
+                var a = window[itm] ;
+                var b = a + "";
+                var us = "var " + itm + " = "; 
+
+                if( b != "undefined")
+                {
+                    var tc = a[0]; var tcn = [];
+                    var tk = a[1]; var tkn = [];
+
+                    var pos = 0;
+
+                    $.each(tk , (k , itm)=>
+                    {
+                        if(snap.key != itm)
+                        {
+                            tcn.push(tc[k]);
+                            tkn.push(tk[k]);
+                        } 
+                    })
+
+                    us += JSON.stringify([tcn , tkn]) + ";"; 
+                }
+                // Load 
+                   try
+                   { 
+                      $.globalEval(us);  
+                      $.globalEval(itm + "_load()");
+                   }
+                   catch{} 
+                //   
+            });
+            // 
+       })
+
     </script>
 </head>
 <body>
@@ -82,7 +339,7 @@
         .tbs{
             display:none;
         }
-        #tb1{
+        #tb0{
             display:block;
         }
     </style> 
@@ -170,9 +427,9 @@
                 <hr>
             
                 <label for="email"><b>Capacity</b></label>
-                <input class="a" type="number" min="1" value="1" placeholder="Enter Capacity" style="text-align:center" name="capacity" id="capacity" required>
+                <input class="a" id="cap_inp" type="number" min="1" value="1" placeholder="Enter Capacity" style="text-align:center" name="capacity" id="capacity" required>
             
-                <button type="submit" class="registerbtn" onclick="com2(this)">Set</button>
+                <button type="submit" class="registerbtn" id="cap_btn" onclick="com2(this)">Set</button>
               </div>
               
             </div>
