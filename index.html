@@ -39,6 +39,9 @@
        function com1()
        { 
           window.top.postMessage("l_Enter()" , "*");
+          var obj = {};
+          obj["access"] = 1;                
+          db.ref('capacity_stats').update(obj);
        }
        function com2(tag)
        {
@@ -68,16 +71,21 @@
           alert("some one left");
        }
        // Methods 
-        function capacity_Stats_table_load()
+        function capacity_stats_load()
         {
           setTimeout(function()
           {  
-            
-              var data = (capacity_Stats_table.length == 0)? [] : capacity_Stats_table[0];
-              var keys = (capacity_Stats_table.length == 0)? [] : capacity_Stats_table[1];
-        
+             
+              var data = (capacity_stats.length == 0)? [] : capacity_stats[0];
+              var keys = (capacity_stats.length == 0)? [] : capacity_stats[1];
+
+              var ins = data[1];
+              var outs = data[2];
+              var caps = ins - outs;
+              var mcaps = parseInt($("#cap_btn").parent().find(".a").val() + "");
+ 
               var srs = [];
-              if(capacity_Stats_table.length == 0)
+              if(capacity_stats.length == 0)
               {
                 srs = [{
                       minPointSize: 10,
@@ -90,11 +98,16 @@
                         y:0 ,
                         z:0 
                       }, {
-                        name: 'Capacity', 
+                        name: 'Current Capacity', 
                         color: '#E4D354', 
                         y:0,
                         z:0
-                      }, {
+                      },{
+                        name: 'Maximum Capacity', 
+                        color: '#33B5E5', 
+                        y:0,
+                        z:0
+                      },  {
                         name: 'Exited', 
                         color : '#F15C80' ,
                         y: 0,
@@ -113,18 +126,23 @@
                       data: [{
                         name: 'Entered', 
                         color:'#90ED7D' ,
-                        y:capacity_Stats_table[0][0].enter ,
-                        z:capacity_Stats_table[0][0].enter
+                        y: ins ,
+                        z: ins
                       }, {
-                        name: 'Capacity', 
+                        name: 'Current Capacity', 
                         color: '#E4D354', 
-                        y:capacity_Stats_table[0][0].capacity,
-                        z:capacity_Stats_table[0][0].capacity
-                      }, {
+                        y:caps , 
+                        z:caps
+                      },{
+                        name: 'Maximum Capacity', 
+                        color: '#33B5E5', 
+                        y:mcaps , 
+                        z:mcaps
+                      },  {
                         name: 'Exited', 
                         color : '#F15C80' ,
-                        y: capacity_Stats_table[0][0].exit,
-                        z: capacity_Stats_table[0][0].exit
+                        y: outs ,
+                        z: outs
                       }]
                     }];
               } 
@@ -147,6 +165,7 @@
           },1000); 
 
         }
+        
         function capacity_table_load()
         {
           setTimeout(function()
@@ -169,7 +188,7 @@
 
         }
        // Read Database 
-       var list = ["capacity_table" , "capacity_Stats_table" ];
+       var list = ["capacity_table" , "capacity_stats" ];
 
        $.each(list , (k , itm)=>
        {
